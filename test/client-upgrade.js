@@ -6,202 +6,202 @@ const net = require('net')
 const http = require('http')
 const EE = require('events')
 
-test('basic upgrade', (t) => {
-  t.plan(3)
+// test('basic upgrade', (t) => {
+//   t.plan(3)
 
-  const server = net.createServer((c) => {
-    c.on('data', (d) => {
-      c.write('HTTP/1.1 101\r\n')
-      c.write('hello: world\r\n')
-      c.write('connection: upgrade\r\n')
-      c.write('upgrade: websocket\r\n')
-      c.write('\r\n')
-      c.write('Body')
-    })
+//   const server = net.createServer((c) => {
+//     c.on('data', (d) => {
+//       c.write('HTTP/1.1 101\r\n')
+//       c.write('hello: world\r\n')
+//       c.write('connection: upgrade\r\n')
+//       c.write('upgrade: websocket\r\n')
+//       c.write('\r\n')
+//       c.write('Body')
+//     })
 
-    c.on('end', () => {
-      c.end()
-    })
-  })
-  t.tearDown(server.close.bind(server))
+//     c.on('end', () => {
+//       c.end()
+//     })
+//   })
+//   t.tearDown(server.close.bind(server))
 
-  server.listen(0, () => {
-    const client = new Client(`http://localhost:${server.address().port}`)
-    t.tearDown(client.close.bind(client))
+//   server.listen(0, () => {
+//     const client = new Client(`http://localhost:${server.address().port}`)
+//     t.tearDown(client.close.bind(client))
 
-    client.upgrade({
-      path: '/',
-      method: 'GET',
-      protocol: 'Websocket'
-    }, (err, data) => {
-      t.error(err)
+//     client.upgrade({
+//       path: '/',
+//       method: 'GET',
+//       protocol: 'Websocket'
+//     }, (err, data) => {
+//       t.error(err)
 
-      const { headers, socket } = data
+//       const { headers, socket } = data
 
-      let recvData = ''
-      data.socket.on('data', (d) => {
-        recvData += d
-      })
+//       let recvData = ''
+//       data.socket.on('data', (d) => {
+//         recvData += d
+//       })
 
-      socket.on('close', () => {
-        t.strictEqual(recvData.toString(), 'Body')
-      })
+//       socket.on('close', () => {
+//         t.strictEqual(recvData.toString(), 'Body')
+//       })
 
-      t.deepEqual(headers, {
-        hello: 'world',
-        connection: 'upgrade',
-        upgrade: 'websocket'
-      })
-      socket.end()
-    })
-  })
-})
+//       t.deepEqual(headers, {
+//         hello: 'world',
+//         connection: 'upgrade',
+//         upgrade: 'websocket'
+//       })
+//       socket.end()
+//     })
+//   })
+// })
 
-test('basic upgrade promise', (t) => {
-  t.plan(2)
+// test('basic upgrade promise', (t) => {
+//   t.plan(2)
 
-  const server = net.createServer((c) => {
-    c.on('data', (d) => {
-      c.write('HTTP/1.1 101\r\n')
-      c.write('hello: world\r\n')
-      c.write('connection: upgrade\r\n')
-      c.write('upgrade: websocket\r\n')
-      c.write('\r\n')
-      c.write('Body')
-    })
+//   const server = net.createServer((c) => {
+//     c.on('data', (d) => {
+//       c.write('HTTP/1.1 101\r\n')
+//       c.write('hello: world\r\n')
+//       c.write('connection: upgrade\r\n')
+//       c.write('upgrade: websocket\r\n')
+//       c.write('\r\n')
+//       c.write('Body')
+//     })
 
-    c.on('end', () => {
-      c.end()
-    })
-  })
-  t.tearDown(server.close.bind(server))
+//     c.on('end', () => {
+//       c.end()
+//     })
+//   })
+//   t.tearDown(server.close.bind(server))
 
-  server.listen(0, async () => {
-    const client = new Client(`http://localhost:${server.address().port}`)
-    t.tearDown(client.close.bind(client))
+//   server.listen(0, async () => {
+//     const client = new Client(`http://localhost:${server.address().port}`)
+//     t.tearDown(client.close.bind(client))
 
-    const { headers, socket } = await client.upgrade({
-      path: '/',
-      method: 'GET',
-      protocol: 'Websocket'
-    })
+//     const { headers, socket } = await client.upgrade({
+//       path: '/',
+//       method: 'GET',
+//       protocol: 'Websocket'
+//     })
 
-    let recvData = ''
-    socket.on('data', (d) => {
-      recvData += d
-    })
+//     let recvData = ''
+//     socket.on('data', (d) => {
+//       recvData += d
+//     })
 
-    socket.on('close', () => {
-      t.strictEqual(recvData.toString(), 'Body')
-    })
+//     socket.on('close', () => {
+//       t.strictEqual(recvData.toString(), 'Body')
+//     })
 
-    t.deepEqual(headers, {
-      hello: 'world',
-      connection: 'upgrade',
-      upgrade: 'websocket'
-    })
-    socket.end()
-  })
-})
+//     t.deepEqual(headers, {
+//       hello: 'world',
+//       connection: 'upgrade',
+//       upgrade: 'websocket'
+//     })
+//     socket.end()
+//   })
+// })
 
-test('upgrade error', (t) => {
-  t.plan(1)
+// test('upgrade error', (t) => {
+//   t.plan(1)
 
-  const server = net.createServer((c) => {
-    c.on('data', (d) => {
-      c.write('HTTP/1.1 101\r\n')
-      c.write('hello: world\r\n')
-      c.write('connection: upgrade\r\n')
-      c.write('\r\n')
-      c.write('Body')
-    })
-    c.on('error', () => {
-      // Whether we get an error, end or close is undefined.
-      // Ignore error.
-    })
-  })
-  t.tearDown(server.close.bind(server))
+//   const server = net.createServer((c) => {
+//     c.on('data', (d) => {
+//       c.write('HTTP/1.1 101\r\n')
+//       c.write('hello: world\r\n')
+//       c.write('connection: upgrade\r\n')
+//       c.write('\r\n')
+//       c.write('Body')
+//     })
+//     c.on('error', () => {
+//       // Whether we get an error, end or close is undefined.
+//       // Ignore error.
+//     })
+//   })
+//   t.tearDown(server.close.bind(server))
 
-  server.listen(0, async () => {
-    const client = new Client(`http://localhost:${server.address().port}`)
-    t.tearDown(client.close.bind(client))
+//   server.listen(0, async () => {
+//     const client = new Client(`http://localhost:${server.address().port}`)
+//     t.tearDown(client.close.bind(client))
 
-    try {
-      await client.upgrade({
-        path: '/',
-        method: 'GET',
-        protocol: 'Websocket'
-      })
-    } catch (err) {
-      t.ok(err)
-    }
-  })
-})
+//     try {
+//       await client.upgrade({
+//         path: '/',
+//         method: 'GET',
+//         protocol: 'Websocket'
+//       })
+//     } catch (err) {
+//       t.ok(err)
+//     }
+//   })
+// })
 
-test('upgrade invalid opts', (t) => {
-  t.plan(2)
+// test('upgrade invalid opts', (t) => {
+//   t.plan(2)
 
-  const client = new Client('http://localhost:5432')
+//   const client = new Client('http://localhost:5432')
 
-  client.upgrade(null, err => {
-    t.ok(err instanceof errors.InvalidArgumentError)
-  })
+//   client.upgrade(null, err => {
+//     t.ok(err instanceof errors.InvalidArgumentError)
+//   })
 
-  try {
-    client.upgrade(null, null)
-  } catch (err) {
-    t.ok(err instanceof errors.InvalidArgumentError)
-  }
-})
+//   try {
+//     client.upgrade(null, null)
+//   } catch (err) {
+//     t.ok(err instanceof errors.InvalidArgumentError)
+//   }
+// })
 
-test('basic upgrade2', (t) => {
-  t.plan(4)
+// test('basic upgrade2', (t) => {
+//   t.plan(4)
 
-  const server = http.createServer()
-  server.on('upgrade', (req, c, head) => {
-    c.write('HTTP/1.1 101\r\n')
-    c.write('hello: world\r\n')
-    c.write('connection: upgrade\r\n')
-    c.write('upgrade: websocket\r\n')
-    c.write('\r\n')
-    c.write('Body')
-    c.end()
-  })
-  t.tearDown(server.close.bind(server))
+//   const server = http.createServer()
+//   server.on('upgrade', (req, c, head) => {
+//     c.write('HTTP/1.1 101\r\n')
+//     c.write('hello: world\r\n')
+//     c.write('connection: upgrade\r\n')
+//     c.write('upgrade: websocket\r\n')
+//     c.write('\r\n')
+//     c.write('Body')
+//     c.end()
+//   })
+//   t.tearDown(server.close.bind(server))
 
-  server.listen(0, () => {
-    const client = new Client(`http://localhost:${server.address().port}`)
-    t.tearDown(client.close.bind(client))
+//   server.listen(0, () => {
+//     const client = new Client(`http://localhost:${server.address().port}`)
+//     t.tearDown(client.close.bind(client))
 
-    client.upgrade({
-      path: '/',
-      method: 'GET',
-      protocol: 'Websocket'
-    }, (err, data) => {
-      t.error(err)
+//     client.upgrade({
+//       path: '/',
+//       method: 'GET',
+//       protocol: 'Websocket'
+//     }, (err, data) => {
+//       t.error(err)
 
-      const { headers, socket } = data
+//       const { headers, socket } = data
 
-      t.strictEqual(socket._readableState.flowing, null)
+//       t.strictEqual(socket._readableState.flowing, null)
 
-      let recvData = ''
-      data.socket.on('data', (d) => {
-        recvData += d
-      })
+//       let recvData = ''
+//       data.socket.on('data', (d) => {
+//         recvData += d
+//       })
 
-      socket.on('close', () => {
-        t.strictEqual(recvData.toString(), 'Body')
-      })
+//       socket.on('close', () => {
+//         t.strictEqual(recvData.toString(), 'Body')
+//       })
 
-      t.deepEqual(headers, {
-        hello: 'world',
-        connection: 'upgrade',
-        upgrade: 'websocket'
-      })
-      socket.end()
-    })
-  })
-})
+//       t.deepEqual(headers, {
+//         hello: 'world',
+//         connection: 'upgrade',
+//         upgrade: 'websocket'
+//       })
+//       socket.end()
+//     })
+//   })
+// })
 
 test('upgrade wait for empty pipeline', (t) => {
   t.plan(7)
@@ -268,105 +268,105 @@ test('upgrade wait for empty pipeline', (t) => {
   })
 })
 
-test('upgrade aborted', (t) => {
-  t.plan(3)
+// test('upgrade aborted', (t) => {
+//   t.plan(3)
 
-  const server = http.createServer((req, res) => {
-    t.fail()
-  })
-  server.on('upgrade', (req, c, firstBodyChunk) => {
-    t.fail()
-  })
-  t.tearDown(server.close.bind(server))
+//   const server = http.createServer((req, res) => {
+//     t.fail()
+//   })
+//   server.on('upgrade', (req, c, firstBodyChunk) => {
+//     t.fail()
+//   })
+//   t.tearDown(server.close.bind(server))
 
-  server.listen(0, async () => {
-    const client = new Client(`http://localhost:${server.address().port}`, {
-      pipelining: 3
-    })
-    t.tearDown(client.close.bind(client))
+//   server.listen(0, async () => {
+//     const client = new Client(`http://localhost:${server.address().port}`, {
+//       pipelining: 3
+//     })
+//     t.tearDown(client.close.bind(client))
 
-    const signal = new EE()
-    client.upgrade({
-      path: '/',
-      signal,
-      opaque: 'asd'
-    }, (err, { opaque }) => {
-      t.strictEqual(opaque, 'asd')
-      t.ok(err instanceof errors.RequestAbortedError)
-    })
-    t.strictEqual(client.busy, true)
-    signal.emit('abort')
-  })
-})
+//     const signal = new EE()
+//     client.upgrade({
+//       path: '/',
+//       signal,
+//       opaque: 'asd'
+//     }, (err, { opaque }) => {
+//       t.strictEqual(opaque, 'asd')
+//       t.ok(err instanceof errors.RequestAbortedError)
+//     })
+//     t.strictEqual(client.busy, true)
+//     signal.emit('abort')
+//   })
+// })
 
-test('basic aborted after res', (t) => {
-  t.plan(1)
+// test('basic aborted after res', (t) => {
+//   t.plan(1)
 
-  const signal = new EE()
-  const server = http.createServer()
-  server.on('upgrade', (req, c, head) => {
-    c.write('HTTP/1.1 101\r\n')
-    c.write('hello: world\r\n')
-    c.write('connection: upgrade\r\n')
-    c.write('upgrade: websocket\r\n')
-    c.write('\r\n')
-    c.write('Body')
-    c.end()
-    c.on('error', () => {
+//   const signal = new EE()
+//   const server = http.createServer()
+//   server.on('upgrade', (req, c, head) => {
+//     c.write('HTTP/1.1 101\r\n')
+//     c.write('hello: world\r\n')
+//     c.write('connection: upgrade\r\n')
+//     c.write('upgrade: websocket\r\n')
+//     c.write('\r\n')
+//     c.write('Body')
+//     c.end()
+//     c.on('error', () => {
 
-    })
-    signal.emit('abort')
-  })
-  t.tearDown(server.close.bind(server))
+//     })
+//     signal.emit('abort')
+//   })
+//   t.tearDown(server.close.bind(server))
 
-  server.listen(0, () => {
-    const client = new Client(`http://localhost:${server.address().port}`)
-    t.tearDown(client.close.bind(client))
+//   server.listen(0, () => {
+//     const client = new Client(`http://localhost:${server.address().port}`)
+//     t.tearDown(client.close.bind(client))
 
-    client.upgrade({
-      path: '/',
-      method: 'GET',
-      protocol: 'Websocket',
-      signal
-    }, (err) => {
-      t.ok(err instanceof errors.RequestAbortedError)
-    })
-  })
-})
+//     client.upgrade({
+//       path: '/',
+//       method: 'GET',
+//       protocol: 'Websocket',
+//       signal
+//     }, (err) => {
+//       t.ok(err instanceof errors.RequestAbortedError)
+//     })
+//   })
+// })
 
-test('basic upgrade error', (t) => {
-  t.plan(2)
+// test('basic upgrade error', (t) => {
+//   t.plan(2)
 
-  const server = net.createServer((c) => {
-    c.on('data', (d) => {
-      c.write('HTTP/1.1 101\r\n')
-      c.write('hello: world\r\n')
-      c.write('connection: upgrade\r\n')
-      c.write('upgrade: websocket\r\n')
-      c.write('\r\n')
-      c.write('Body')
-    })
-    c.on('error', () => {
+//   const server = net.createServer((c) => {
+//     c.on('data', (d) => {
+//       c.write('HTTP/1.1 101\r\n')
+//       c.write('hello: world\r\n')
+//       c.write('connection: upgrade\r\n')
+//       c.write('upgrade: websocket\r\n')
+//       c.write('\r\n')
+//       c.write('Body')
+//     })
+//     c.on('error', () => {
 
-    })
-  })
-  t.tearDown(server.close.bind(server))
+//     })
+//   })
+//   t.tearDown(server.close.bind(server))
 
-  server.listen(0, () => {
-    const client = new Client(`http://localhost:${server.address().port}`)
-    t.tearDown(client.close.bind(client))
+//   server.listen(0, () => {
+//     const client = new Client(`http://localhost:${server.address().port}`)
+//     t.tearDown(client.close.bind(client))
 
-    const _err = new Error()
-    client.upgrade({
-      path: '/',
-      method: 'GET',
-      protocol: 'Websocket'
-    }, (err, data) => {
-      t.error(err)
-      data.socket.on('error', (err) => {
-        t.strictEqual(err, _err)
-      })
-      throw _err
-    })
-  })
-})
+//     const _err = new Error()
+//     client.upgrade({
+//       path: '/',
+//       method: 'GET',
+//       protocol: 'Websocket'
+//     }, (err, data) => {
+//       t.error(err)
+//       data.socket.on('error', (err) => {
+//         t.strictEqual(err, _err)
+//       })
+//       throw _err
+//     })
+//   })
+// })
